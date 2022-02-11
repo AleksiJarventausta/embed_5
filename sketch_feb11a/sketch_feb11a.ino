@@ -23,7 +23,6 @@ void setup() {
   );
    lcd.begin(16, 2);
   // Print a message to the LCD.
-  lcd.print("hello, world!");
   delay(1000);
 }
 void button_interrupt() {
@@ -34,18 +33,29 @@ void button_interrupt() {
 void loop() {
   switch (state) {
     case start:
-      Serial.println("Press button to start the game!");
-      while (!button_pressed) {}
-      digitalWrite(led_pin, HIGH);
       lcd.clear();
-      lcd.print("painettu");
+      lcd.print("Press button to start the game!");
+      while (!button_pressed) {}
       delay(button_debounce);
       state = waiting;
       break;
     case waiting:
-      
+      lcd.clear();
+      lcd.print("waiting...");
+      delay(random(700, 5000));
+      digitalWrite(led_pin, HIGH);
+      measurement_start = millis();
+      state = measuring;
       break;
     case measuring:
+      while (!button_pressed) {}
+      result = millis();
+      result = result - measurement_start;
+      digitalWrite(led_pin, LOW);
+      lcd.clear();
+      lcd.print(result);
+      delay(4000);
+      state = start;
       break;
     case cheater:
       break;
